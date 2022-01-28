@@ -1,24 +1,58 @@
 import { Box, Text, TextField, Image, Button } from "@skynexui/components";
 import React from "react";
 import appConfig from "../config.json";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import react from "react";
+
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQwMDI3MCwiZXhwIjoxOTU4OTc2MjcwfQ.OepXS2xzrE8IfmQChRxenv9rg-reahE8rFF7wUXq07w";
+
+const SUPABASE_URL = "https://guviesarwdjrmnaanjsx.supabase.co";
+
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
 
 export default function ChatPage() {
   const [mensagem, setMensagem] = React.useState("");
 
   const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
+  React.useEffect( () => {
+    const dadosDoSupabase = supabaseClient
+    .from("mensagens")
+    .select("*")
+    .order('id', {ascending: false})
+    .then(({data}) => {
+      console.log("Dados da consulta: ", data);
+      setListaDeMensagens(data);
+    });
+
+  },[]);
+
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
-      id: listaDeMensagens.length + 1,
+      // id: listaDeMensagens.length + 1,
       de: "BrennoMachado",
       texto: novaMensagem,
     };
-    setListaDeMensagens([mensagem, ...listaDeMensagens]);
+
+    supabaseClient
+    .from('mensagens')
+    .insert([
+      mensagem
+    ])
+    .then(({data}) => {
+      console.log('Criando mensagem: ', data);
+      setListaDeMensagens([
+        data[0],
+        ...listaDeMensagens
+      ]);
+    });
+
     setMensagem("");
   }
-  // Sua lógica vai aqui
-
-  // ./Sua lógica vai aqui
+  
   return (
     <Box
       styleSheet={{
@@ -174,7 +208,7 @@ function MessageList(props) {
                   marginRight: "8px",
                 }}
                 //Aqui é para receber o usuário que vaio da página principal, não "brennomachado"
-                src={`https://github.com/brennomachado.png`} 
+                src={`https://github.com/${mensagem.de}.png`}
               />
               <Text tag="strong">{mensagem.de}</Text>
               <Text
