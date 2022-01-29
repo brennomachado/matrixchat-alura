@@ -4,6 +4,7 @@ import appConfig from "../config.json";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import react from "react";
 import { useRouter } from 'next/router';
+import {ButtonSendSticker} from '../src/components/ButtonSendStickers';
 
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQwMDI3MCwiZXhwIjoxOTU4OTc2MjcwfQ.OepXS2xzrE8IfmQChRxenv9rg-reahE8rFF7wUXq07w";
@@ -16,7 +17,13 @@ export default function ChatPage() {
   const roteamento = useRouter();
   const usuarioLogado = roteamento.query.username;
   const [mensagem, setMensagem] = React.useState("");
-  const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
+  const [listaDeMensagens, setListaDeMensagens] = React.useState([
+    // {
+    //   id: 1,
+    //   de: 'omariosouto',
+    //   texto: ':sticker: https://www.alura.com.br/imersao-react-4/assets/figurinhas/Figurinha_2.png',
+    // }
+  ]);
 
   React.useEffect( () => {
     const dadosDoSupabase = supabaseClient
@@ -95,14 +102,6 @@ export default function ChatPage() {
           }}
         >
           <MessageList mensagens={listaDeMensagens} />
-          {/* {listaDeMensagens.map((mensagemAtual) => {
-              
-              return (
-                  <li key={mensagemAtual.id}>
-                      {mensagemAtual.de}: {mensagemAtual.texto}
-                  </li>
-              )
-          })} */}
           <Box
             as="form"
             styleSheet={{
@@ -134,6 +133,12 @@ export default function ChatPage() {
                 marginRight: "12px",
                 color: appConfig.theme.colors.neutrals[200],
               }}
+            />
+            <ButtonSendSticker
+              onStickerClick={(sticker) => {
+                handleNovaMensagem(`:sticker: ${sticker}`);
+            }}
+            
             />
           </Box>
         </Box>
@@ -222,7 +227,19 @@ function MessageList(props) {
                 {new Date().toLocaleDateString()}
               </Text>
             </Box>
-            {mensagem.texto}
+
+
+            {mensagem.texto.startsWith(':sticker:')
+            ? (
+              <Image 
+              height='150px'
+              width='150px'
+              src={mensagem.texto.replace(':sticker:', '')} />
+            )
+            : (
+              mensagem.texto
+            )
+          }
           </Text>
         );
       })}
