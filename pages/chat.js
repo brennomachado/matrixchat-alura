@@ -3,19 +3,19 @@ import React from "react";
 import appConfig from "../config.json";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import react from "react";
+import { useRouter } from 'next/router';
 
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQwMDI3MCwiZXhwIjoxOTU4OTc2MjcwfQ.OepXS2xzrE8IfmQChRxenv9rg-reahE8rFF7wUXq07w";
-
 const SUPABASE_URL = "https://guviesarwdjrmnaanjsx.supabase.co";
-
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
 
 export default function ChatPage() {
+  const roteamento = useRouter();
+  const usuarioLogado = roteamento.query.username;
   const [mensagem, setMensagem] = React.useState("");
-
   const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
   React.useEffect( () => {
@@ -33,7 +33,7 @@ export default function ChatPage() {
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
       // id: listaDeMensagens.length + 1,
-      de: "BrennoMachado",
+      de: usuarioLogado,
       texto: novaMensagem,
     };
 
