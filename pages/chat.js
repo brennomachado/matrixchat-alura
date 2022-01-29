@@ -3,81 +3,56 @@ import React from "react";
 import appConfig from "../config.json";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import react from "react";
-import { useRouter } from "next/router";
-import { ButtonSendSticker } from "../src/components/ButtonSendSticker";
 
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQwMDI3MCwiZXhwIjoxOTU4OTc2MjcwfQ.OepXS2xzrE8IfmQChRxenv9rg-reahE8rFF7wUXq07w";
 
 const SUPABASE_URL = "https://guviesarwdjrmnaanjsx.supabase.co";
+
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-function escutaMensagensEmTempoReal(adicionaMensagem) {
-  return supabaseClient
-    .from('mensagens')
-    .on('INSERT', (respostaLive) => {
-      adicionaMensagem(respostaLive.new);
-    })
-    .subscribe();
-}
+
 
 export default function ChatPage() {
   const [mensagem, setMensagem] = React.useState("");
-  const [listaDeMensagens, setListaDeMensagens] = React.useState([
-    // {
-    //   id: 1,
-    //   de: "bear",
-    //   texto:
-    //     ":sticker: https://www.alura.com.br/imersao-react-4/assets/figurinhas/Figurinha_2.png",
-    // },
-  ]);
-  const roteamento = useRouter();
-  const usuarioLogado = roteamento.query.username;
 
-  console.log("Roteamento.query: ", roteamento.query);
-  console.log("Usuário Logado: ", usuarioLogado);
+  const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
-  React.useEffect(() => {
+  React.useEffect( () => {
     const dadosDoSupabase = supabaseClient
-      .from("mensagens")
-      .select("*")
-      .order("id", { ascending: false })
-      .then(({ data }) => {
-        console.log("Dados da consulta: ", data);
-        setListaDeMensagens(data);
-      });
-
-    escutaMensagensEmTempoReal((novaMensagem) => {
-      setListaDeMensagens((valorAtualDaLista) => {
-        return [
-          novaMensagem,
-          ...valorAtualDaLista
-        ];
-      });
+    .from("mensagens")
+    .select("*")
+    .order('id', {ascending: false})
+    .then(({data}) => {
+      console.log("Dados da consulta: ", data);
+      setListaDeMensagens(data);
     });
-  }, []);
+
+  },[]);
 
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
       // id: listaDeMensagens.length + 1,
-      de: usuarioLogado,
+      de: "BrennoMachado",
       texto: novaMensagem,
     };
 
     supabaseClient
-      .from("mensagens")
-      .insert([mensagem])
-      .then(({ data }) => {
-        console.log('Criando mensagem: ', data);
-        setListaDeMensagens([
-          data[0],
-          ...listaDeMensagens,
-        ]);
-      });
+    .from('mensagens')
+    .insert([
+      mensagem
+    ])
+    .then(({data}) => {
+      console.log('Criando mensagem: ', data);
+      setListaDeMensagens([
+        data[0],
+        ...listaDeMensagens
+      ]);
+    });
 
-    setMensagem('');
+    setMensagem("");
   }
-
+  
   return (
     <Box
       styleSheet={{
@@ -120,6 +95,14 @@ export default function ChatPage() {
           }}
         >
           <MessageList mensagens={listaDeMensagens} />
+          {/* {listaDeMensagens.map((mensagemAtual) => {
+              
+              return (
+                  <li key={mensagemAtual.id}>
+                      {mensagemAtual.de}: {mensagemAtual.texto}
+                  </li>
+              )
+          })} */}
           <Box
             as="form"
             styleSheet={{
@@ -150,12 +133,6 @@ export default function ChatPage() {
                 backgroundColor: appConfig.theme.colors.neutrals[800],
                 marginRight: "12px",
                 color: appConfig.theme.colors.neutrals[200],
-              }}
-            />
-            <ButtonSendSticker
-              onStickerClick={(sticker) => {
-                console.log("salva esse sticker no banco");
-                handleNovaMensagem(":sticker: " + sticker);
               }}
             />
           </Box>
@@ -230,11 +207,10 @@ function MessageList(props) {
                   display: "inline-block",
                   marginRight: "8px",
                 }}
+                //Aqui é para receber o usuário que vaio da página principal, não "brennomachado"
                 src={`https://github.com/${mensagem.de}.png`}
               />
-              <Text tag="strong">
-                {mensagem.de}
-              </Text>
+              <Text tag="strong">{mensagem.de}</Text>
               <Text
                 styleSheet={{
                   fontSize: "10px",
@@ -246,11 +222,7 @@ function MessageList(props) {
                 {new Date().toLocaleDateString()}
               </Text>
             </Box>
-            {mensagem.texto.startsWith(":sticker:") ? (
-              <Image src={mensagem.texto.replace(":sticker:", "")} />
-            ) : (
-              mensagem.texto
-            )}
+            {mensagem.texto}
           </Text>
         );
       })}
