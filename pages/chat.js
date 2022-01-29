@@ -11,19 +11,21 @@ const SUPABASE_ANON_KEY =
 const SUPABASE_URL = "https://guviesarwdjrmnaanjsx.supabase.co";
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-
+function escutaMensagensEmTempoReal(adicionaMensagem){
+  return supabaseClient
+  .from('mensagens')
+  .on('INSERT', (respostaLive) => {
+    console.log('Houve uma nova mensagem no banco');
+    adicionaMensagem(respostaLive.new)
+  })
+  .subscribe();
+}
 
 export default function ChatPage() {
   const roteamento = useRouter();
   const usuarioLogado = roteamento.query.username;
   const [mensagem, setMensagem] = React.useState("");
-  const [listaDeMensagens, setListaDeMensagens] = React.useState([
-    // {
-    //   id: 1,
-    //   de: 'omariosouto',
-    //   texto: ':sticker: https://www.alura.com.br/imersao-react-4/assets/figurinhas/Figurinha_2.png',
-    // }
-  ]);
+  const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
   React.useEffect( () => {
     const dadosDoSupabase = supabaseClient
@@ -31,8 +33,18 @@ export default function ChatPage() {
     .select("*")
     .order('id', {ascending: false})
     .then(({data}) => {
-      console.log("Dados da consulta: ", data);
+      //console.log("Dados da consulta: ", data);
       setListaDeMensagens(data);
+    });
+
+    escutaMensagensEmTempoReal((novaMensagem)=> {
+      setListaDeMensagens((valorAtualDaLista)=>{
+        return [
+          novaMensagem,
+          ...valorAtualDaLista
+        ]
+      });
+
     });
 
   },[]);
@@ -51,13 +63,10 @@ export default function ChatPage() {
     ])
     .then(({data}) => {
       console.log('Criando mensagem: ', data);
-      setListaDeMensagens([
-        data[0],
-        ...listaDeMensagens
-      ]);
+      
     });
 
-    setMensagem("");
+    setMensagem('');
   }
   
   return (

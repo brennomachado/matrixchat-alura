@@ -21,17 +21,6 @@ function Titulo(props) {
   );
 }
 
-//Componente React
-// function HomePage() {
-//     // JSX
-//     return (
-//         <div>
-//             <GlobalStyle/>
-//             <Titulo tag="h2">Boas vindas de volta!</Titulo>
-//             <h2>Discord - Alura Matrix</h2>
-//         </div>
-//     )
-//   }
 
 //   export default HomePage
 
@@ -78,7 +67,7 @@ export default function PaginaInicial() {
             as="form"
             onSubmit={function (infosDoEvento) {
               infosDoEvento.preventDefault();
-              console.log('Alguem submeteu o form');
+              //console.log('Alguem submeteu o form');
               roteamento.push(`/chat?username=${username}`)
               // window.location.href='/chat'
             }}
@@ -106,7 +95,7 @@ export default function PaginaInicial() {
             {/* <input typ="text"
             value={username}
             onChange={function(event) {
-              console.log('Digitou algo', event.target.value);
+              //console.log('Digitou algo', event.target.value);
               
               //Onde está o valor?
               const valor = event.target.value;
@@ -120,7 +109,7 @@ export default function PaginaInicial() {
             <TextField
               value={username}
               onChange={function(event) {
-                console.log('Digitou algo', event.target.value);
+                //console.log('Digitou algo', event.target.value);
                 
                 //Onde está o valor?
                 const valor = event.target.value;
