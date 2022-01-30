@@ -157,6 +157,10 @@ export default function ChatPage() {
 }
 
 function Header() {
+  const roteamento = useRouter();
+  const nomeUsuario = roteamento.query.criador;
+  const userLogado = roteamento.query.username;
+
   return (
     <>
       <Box
@@ -167,8 +171,23 @@ function Header() {
           alignItems: "center",
           justifyContent: "space-between",
         }}
-      >
-        <Text variant="heading5">Chat</Text>
+      > 
+          <Text variant="heading5">Chat</Text>
+          <div>
+            <Image 
+              styleSheet={{
+                width: "59px",
+                height: "59px",
+                borderRadius: "50%",
+                display: "inline-block",
+                marginRight: "8px",
+              }}
+                    //Aqui é para receber o usuário que vaio da página principal, não "brennomachado"
+                    src={`https://github.com/${userLogado}.png`}
+            />
+            <Text variant="heading5"> Olá {nomeUsuario}!</Text>
+          </div>
+
         <Button
           variant="tertiary"
           colorVariant="neutral"
@@ -181,7 +200,7 @@ function Header() {
 }
 
 function MessageList(props) {
-  console.log("MessageList", props);
+  // console.log("MessageList", props);
   return (
     <Box
       tag="ul"
