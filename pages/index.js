@@ -3,8 +3,6 @@ import React from "react";
 import { useRouter } from 'next/router';
 import appConfig from "../config.json";
 
-
-
 function Titulo(props) {
   const Tag = props.tag || 'h1';
   return (
@@ -21,13 +19,20 @@ function Titulo(props) {
   );
 }
 
-
 //   export default HomePage
 
 export default function PaginaInicial() {
-  // const username = "brennomachado";
   const [username, setUsername] = React.useState('brennomachado');
   const roteamento = useRouter(); 
+  let [usernameCriador, setUsernameCriador] = React.useState('Brenno Machado');
+
+  const requestURL = `https://api.github.com/users/${username}`
+
+  async function pegaNome(){ 
+    const response = await fetch(requestURL);
+    const caralho = await response.json()
+    return await caralho
+  }
 
   return (
     <>
@@ -67,9 +72,9 @@ export default function PaginaInicial() {
             as="form"
             onSubmit={function (infosDoEvento) {
               infosDoEvento.preventDefault();
-              //console.log('Alguem submeteu o form');
-              roteamento.push(`/chat?username=${username}`)
-              // window.location.href='/chat'
+              pegaNome().then((promessa)=>{
+                roteamento.push(`/chat?username=${username}&criador=${promessa.name}`)
+              })
             }}
             styleSheet={{
               display: "flex",
@@ -85,38 +90,31 @@ export default function PaginaInicial() {
             <Text
               variant="body3"
               styleSheet={{
-                marginBottom: "32px",
+                marginBottom: "24px",
                 color: appConfig.theme.colors.neutrals[300],
+                textDecoration: 'none',
               }}
             >
-              {appConfig.name}
+              {appConfig.name}{' - '}
+              <a
+                style={{
+                  textDecoration: 'none',
+                  color: appConfig.theme.colors.primary[400],
+                }}
+                href="https://github.com/brennomachado">
+                Github
+              </a>
             </Text>
-
-            {/* <input typ="text"
-            value={username}
-            onChange={function(event) {
-              //console.log('Digitou algo', event.target.value);
-              
-              //Onde está o valor?
-              const valor = event.target.value;
-
-              //Troca o valor da variável
-              setUsername(valor);
-
-            }}
             
-            /> */}
             <TextField
               value={username}
               onChange={function(event) {
-                //console.log('Digitou algo', event.target.value);
                 
                 //Onde está o valor?
                 const valor = event.target.value;
   
                 //Troca o valor da variável
                 setUsername(valor);
-  
               }}
             
               fullWidth
